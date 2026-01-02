@@ -5,15 +5,15 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+    env_file:
+      - ./backend/.env #need to create this file when deployed and paste here the database url.
     depends_on:
       - db
 
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - backend
 
@@ -21,7 +21,7 @@ services:
     image: postgres:15
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: <YOUR_DB_PASSWORD> # here comes the password for your rds postgress
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
