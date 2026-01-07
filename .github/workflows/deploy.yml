@@ -44,7 +44,7 @@ jobs:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.EC2_KEY }}
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       # 6. Deploy on EC2
       - name: Deploy on EC2
@@ -52,8 +52,8 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          # key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/${{ secrets.EC2_USER }}
 
