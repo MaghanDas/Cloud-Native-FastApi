@@ -65,9 +65,9 @@ jobs:
 
             # Create .env dynamically
             cat > backend/.env <<EOL
-DATABASE_URL=${{ secrets.DATABASE_URL }}
-REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
-EOL
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
+            EOL
 
             # Ensure docker compose v2 is available
             docker compose version || sudo apt-get update && sudo apt-get install -y docker-compose-plugin
