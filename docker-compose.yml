@@ -1,10 +1,8 @@
-script: |
-  cat <<EOF > docker-compose.yml
 version: "3.9"
 
 services:
   backend:
-    image: <USER>/fastapi-backend:latest
+    image: maghandas/fastapi-backend:latest
     ports:
       - "8000:8000"
     env_file:
@@ -12,14 +10,9 @@ services:
     restart: always
 
   frontend:
-    image: <USER>/fastapi-frontend:latest
+    image: maghandas/fastapi-frontend:latest
     ports:
       - "80:80"
     depends_on:
       - backend
     restart: always
-EOF
-
-  docker compose down
-  docker compose pull
-  docker compose up -d
