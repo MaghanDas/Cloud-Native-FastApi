@@ -5,23 +5,12 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
-    depends_on:
-      - db
+    env_file:
+      - ./backend/.env
 
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - backend
-
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgress
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
