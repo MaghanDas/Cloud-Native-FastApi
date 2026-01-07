@@ -2,9 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import "./App.css";
 import TaglineSection from "./TaglineSection";
-
 const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL:  process.env.REACT_APP_API_URL;
 });
 
 function App() {
