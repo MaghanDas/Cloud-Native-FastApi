@@ -3,85 +3,67 @@ name: CI/CD Deployment
 on:
   push:
     branches:
-      - main  # deploy when main branch updates
+      - main  # Run on push to main branch
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
-      - name: Checkout code
+      # 1. Checkout the repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Login to Docker Hub
-      - name: Login to Docker Hub
+      # 2. Set up Docker Buildx (needed for building images)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Log in to Docker Hub
+      - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 3️⃣ Build backend image
-      - name: Build backend image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/fastapi-backend:latest ./backend
+      # 4. Build and push backend image
+      - name: Build and push backend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/fastapi-backend:latest
 
-      # 4️⃣ Build frontend image
-      - name: Build frontend image
-        run: |
-          docker build --build-arg REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} \
-          -t ${{ secrets.DOCKER_USERNAME }}/fastapi-frontend:latest ./frontend
+      # 5. Build and push frontend image
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/fastapi-frontend:latest
+          build-args: |
+            REACT_APP_API_URL=http://YOUR_EC2_PUBLIC_IP:8000
 
-      # 5️⃣ Push backend image
-      - name: Push backend image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/fastapi-backend:latest
-
-      # 6️⃣ Push frontend image
-      - name: Push frontend image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/fastapi-frontend:latest
-
-      # 7️⃣ Setup SSH for EC2
+      # 6. Setup SSH for deployment
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.1
         with:
           ssh-private-key: ${{ secrets.EC2_KEY }}
 
-      # 8️⃣ Deploy to EC2
-      - name: Deploy to EC2
+      # 7. Deploy to EC2 via SSH
+      - name: Deploy on EC2
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          username: ec2-user
           key: ${{ secrets.EC2_KEY }}
+          port: 22
           script: |
-            cd /home/${{ secrets.EC2_USER }}
-
-            # Remove old repo folder to avoid conflicts
-            rm -rf Cloud-Native-FastApi
-
-            # Clone fresh copy
-            git clone https://github.com/${{ github.repository }}.git Cloud-Native-FastApi
-            cd Cloud-Native-FastApi
-
-            # Create .env dynamically
-            cat > backend/.env <<EOL
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
-            EOL
-
-            # Ensure docker compose v2 is available
-            docker compose version || sudo apt-get update && sudo apt-get install -y docker-compose-plugin
-
-            # Stop previous containers
-            docker compose down
-
-            # Pull latest images from Docker Hub
+            cd /home/ec2-user/fastapi-project || mkdir -p /home/ec2-user/fastapi-project
+            # Pull latest images
             docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi-backend:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi-frontend:latest
-
-            # Replace image names in docker-compose.yml
-            sed -i "s|image:.*fastapi-backend.*|image: ${{ secrets.DOCKER_USERNAME }}/fastapi-backend:latest|g" docker-compose.yml
-            sed -i "s|image:.*fastapi-frontend.*|image: ${{ secrets.DOCKER_USERNAME }}/fastapi-frontend:latest|g" docker-compose.yml
-
-            # Start containers
-            docker compose up -d --build
+            # Stop any running containers
+            docker compose down || true
+            # Run containers
+            docker compose up -d
