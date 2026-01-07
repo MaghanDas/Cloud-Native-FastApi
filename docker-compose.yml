@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   backend:
-    image: <YOUR_DOCKERHUB_USERNAME>/fastapi-backend:latest
+    image: maghandas/fastapi-backend:latest
     ports:
       - "8000:8000"
     env_file:
@@ -10,7 +10,7 @@ services:
     restart: always
 
   frontend:
-    image: <YOUR_DOCKERHUB_USERNAME>/fastapi-frontend:latest
+    image: maghandas/fastapi-frontend:latest
     ports:
       - "80:80"
     depends_on:
