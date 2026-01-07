@@ -9,13 +9,18 @@ services:
       - ./backend/.env #need to create this file when deployed and paste here the database url.
     depends_on:
       - db
-
   frontend:
-    build: ./frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: http://localhost:8000
+
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - backend
 
   db:
     image: postgres:15
