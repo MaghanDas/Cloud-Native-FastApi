@@ -9,8 +9,11 @@ services:
       - ./backend/.env
 
   frontend:
-    build: ./frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
+  build:
+    context: ./frontend
+    args:
+      REACT_APP_API_URL: http://<EC2-IP>:8000
+  ports:
+    - "80:80"
+  depends_on:
+    - backend
