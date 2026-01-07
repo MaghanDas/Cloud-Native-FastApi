@@ -9,11 +9,11 @@ services:
       - ./backend/.env
 
   frontend:
-  build:
-    context: ./frontend
-    args:
-      REACT_APP_API_URL: http://54.172.220.112:8000
-  ports:
-    - "80:80"
-  depends_on:
-    - backend
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: http://54.172.220.112:8000
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
