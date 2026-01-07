@@ -3,7 +3,7 @@ import axios from "axios";
 import "./App.css";
 import TaglineSection from "./TaglineSection";
 const api = axios.create({
-  baseURL:  process.env.REACT_APP_API_URL;
+  baseURL:  process.env.REACT_APP_API_URL,
 });
 
 function App() {
