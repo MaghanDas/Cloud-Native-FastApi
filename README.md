@@ -3,6 +3,7 @@
 This repository demonstrates a **production‑ready, cloud‑native web application** built with **FastAPI (backend)**, **React (frontend)**, **PostgreSQL**, **Docker**, **Terraform**, **AWS**, and **CI/CD using GitHub Actions**.
 
 The project is designed to showcase **end‑to‑end DevOps practices** — from local development to automated cloud deployment.
+
 The project was presented to ELTE_COURSE **Cloud-Native-Architecture**. I got **Excellent-Grade**.
 
 
