@@ -204,7 +204,7 @@ function App() {
       <header className="topbar">
         <div className="brand">
           <span className="brand-badge">📦</span>
-          <h1>Telusko Trac 🚀 CI CD WORKING </h1>
+          <h1>Task Trac 🚀 CI CD WORKING </h1>
         </div>
         <div className="top-actions">
           <button className="btn btn-light" onClick={fetchProducts} disabled={loading}>
